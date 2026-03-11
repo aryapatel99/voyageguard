@@ -32,12 +32,13 @@ def calculate_risk(weather_condition,advisory_level,user_budget,estimated_cost):
     elif final_score >= 40:
         risk_level = "Caution"
     else:
-        risk_level = "Low"
+        risk_level = "Low"          
 
     return {
-        "weather_risk": weather_risk,
+        "weather_risk": weather_risk,           
         "advisory_risk": advisory_risk,
         "budget_risk": budget_risk,
         "final_score": final_score,
         "risk_level": risk_level
     }
+    
