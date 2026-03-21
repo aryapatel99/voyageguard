@@ -124,3 +124,50 @@ SOURCE schema.sql;
 This project was developed as part of academic coursework.
 Official documentation and API references were used where required.
 All integration and system logic were implemented by the author(s).
+
+
+---
+
+## Weekly Progress
+
+### Week 1: Project Planning & Setup
+
+- Defined project idea: VoyageGuard – AI-based travel risk evaluation system
+- Identified core problem and objectives
+- Finalized technology stack: Python, Streamlit, MySQL, Gemini API
+- Created GitHub repository and initialized project structure
+- Set up development environment and installed required tools
+- Designed basic system architecture and module separation
+
+---
+
+### Week 2: Database & API Integration
+
+- Set up MySQL database and created schema
+- Implemented database connection in Python
+- Developed tools module for external API integration (weather data)
+- Tested API data retrieval and validation
+- Established data flow from API to system
+
+---
+
+### Week 3: Risk Engine Development
+
+- Designed and implemented risk scoring logic
+- Defined parameters such as temperature, humidity, and conditions
+- Created structured scoring system (numeric risk score + risk level)
+- Tested different scenarios to validate scoring accuracy
+- Refined logic for better decision consistency
+
+---
+
+### Week 4: Agent Integration & Backend Completion
+
+- Implemented agent controller to connect all modules
+- Integrated tools module with risk evaluation engine
+- Connected backend system with MySQL database
+- Ensured proper data flow from API → processing → storage
+- Tested complete backend pipeline end-to-end
+- Achieved fully functional backend workflow for the AI agent
+
+---
