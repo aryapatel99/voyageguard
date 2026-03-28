@@ -4,7 +4,11 @@ def get_weather(destination):
         "delhi": "clear",
         "goa": "moderate"
     }
-    return weather_data.get(destination.lower(), "clear")
+
+    if destination.lower() not in weather_data:
+        return None
+
+    return weather_data[destination.lower()]
 
 
 def get_advisory(destination):
@@ -13,4 +17,8 @@ def get_advisory(destination):
         "delhi": "low",
         "goa": "low"
     }
-    return advisory_data.get(destination.lower(), "low")
+
+    if destination.lower() not in advisory_data:
+        return None
+
+    return advisory_data[destination.lower()]
