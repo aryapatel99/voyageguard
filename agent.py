@@ -1,6 +1,7 @@
 from tools import get_weather, get_advisory
 from risk_engine import calculate_risk
 from database import save_trip_evaluation
+from gemini_helper import generate_explanation
 
 
 def evaluate_trip(destination, travel_date, budget, estimated_cost):
@@ -9,12 +10,16 @@ def evaluate_trip(destination, travel_date, budget, estimated_cost):
     weather = get_weather(destination)
     advisory = get_advisory(destination)
 
-    # Step 2: Validate destination
-    if weather is None or advisory is None:
-        return {"error": "Invalid destination entered"}
-
-    # Step 3: Calculate risk
+    # Step 2: Calculate risk
     risk_result = calculate_risk(weather, advisory, budget, estimated_cost)
+
+    # Step 3: Generate AI explanation
+    explanation = generate_explanation(
+        destination,
+        weather,
+        advisory,
+        risk_result["risk_level"]
+    )
 
     # Step 4: Prepare data for DB
     data = {
@@ -26,11 +31,14 @@ def evaluate_trip(destination, travel_date, budget, estimated_cost):
         "budget_risk": risk_result["budget_risk"],
         "final_score": risk_result["final_score"],
         "risk_level": risk_result["risk_level"],
-        "explanation": f"Weather: {weather}, Advisory: {advisory}, Estimated Cost: {estimated_cost}"
+        "explanation": explanation
     }
 
     # Step 5: Save to database
     save_trip_evaluation(data)
+
+    # Step 6: Add explanation to output
+    risk_result["explanation"] = explanation
 
     return risk_result
 

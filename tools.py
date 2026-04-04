@@ -5,10 +5,8 @@ def get_weather(destination):
         "goa": "moderate"
     }
 
-    if destination.lower() not in weather_data:
-        return None
-
-    return weather_data[destination.lower()]
+    # Default value for unknown cities
+    return weather_data.get(destination.lower(), "moderate")
 
 
 def get_advisory(destination):
@@ -18,7 +16,5 @@ def get_advisory(destination):
         "goa": "low"
     }
 
-    if destination.lower() not in advisory_data:
-        return None
-
-    return advisory_data[destination.lower()]
+    # Default value for unknown cities
+    return advisory_data.get(destination.lower(), "medium")

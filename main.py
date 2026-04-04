@@ -14,7 +14,6 @@ estimated_cost = st.number_input("Estimated Trip Cost", min_value=0)
 # Button
 if st.button("Evaluate Trip"):
 
-    # Input validation
     if destination.strip() == "":
         st.warning("Please enter a destination")
 
@@ -26,16 +25,31 @@ if st.button("Evaluate Trip"):
             estimated_cost
         )
 
-        # Handle invalid destination error
-        if "error" in result:
-            st.error(result["error"])
+        # 🌍 Heading
+        st.subheader("🌍 Trip Risk Analysis")
 
+        # 📊 Breakdown
+        st.markdown("### 📊 Risk Breakdown")
+
+        st.write(f"Weather Risk: {result['weather_risk']} 🌧️")
+        st.write(f"Advisory Risk: {result['advisory_risk']} ⚠️")
+        st.write(f"Budget Risk: {result['budget_risk']} 💸")
+
+        st.markdown("---")
+
+        # 🎯 Score
+        st.markdown(f"### 🎯 Final Score: {result['final_score']}")
+
+        # 🚨 Risk Level with color
+        if result["risk_level"] == "High":
+            st.error(f"🚨 Risk Level: {result['risk_level']}")
+        elif result["risk_level"] == "Medium":
+            st.warning(f"⚠️ Risk Level: {result['risk_level']}")
         else:
-            st.subheader("Risk Evaluation Result")
+            st.success(f"✅ Risk Level: {result['risk_level']}")
 
-            st.write("Final Score:", result["final_score"])
-            st.write("Risk Level:", result["risk_level"])
+        st.markdown("---")
 
-            st.write("Weather Risk:", result["weather_risk"])
-            st.write("Advisory Risk:", result["advisory_risk"])
-            st.write("Budget Risk:", result["budget_risk"])
+        # 🧠 AI Explanation
+        st.markdown("### 🧠 AI Explanation")
+        st.write(result["explanation"])
