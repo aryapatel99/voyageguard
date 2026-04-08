@@ -2,33 +2,34 @@ import streamlit as st
 from agent import evaluate_trip
 from database import get_trip_history
 import base64
+import pandas as pd
+import matplotlib.pyplot as plt
 
 
 # ---------- BACKGROUND IMAGE ----------
-##def set_bg(image_file):
-##    with open(image_file, "rb") as f:
-##        data = base64.b64encode(f.read()).decode()
+def set_bg(image_file):
+    with open(image_file, "rb") as f:
+        data = base64.b64encode(f.read()).decode()
 
-##    st.markdown(
-##        f"""
-##        <style>
-##        .stApp {{
-##            background-image: url("data:image/jpg;base64,{data}");
-##            background-size: cover;
-##        }}
-##        </style>
-##        """,
-##        unsafe_allow_html=True
-##    )
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/jpg;base64,{data}");
+            background-size: cover;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
-# 👇 put your image name here
-##set_bg("bg.jpg")
+set_bg("vg.jpg")
 
 
 # ---------- TITLE ----------
-st.title("🌍 VoyageGuard - Travel Risk Evaluator")
+st.title("🌍 VoyageGuard Dashboard")
 
-st.write("Enter your trip details below:")
+st.write("Analyze travel risk using AI-powered insights")
 
 
 # ---------- INPUT ----------
@@ -52,53 +53,78 @@ if st.button("Evaluate Trip"):
             estimated_cost
         )
 
-        # ---------- OUTPUT ----------
-        st.subheader("🌍 Trip Risk Analysis")
+        st.markdown("---")
 
-        st.markdown("### 📊 Risk Breakdown")
+        # ---------- DASHBOARD CARDS ----------
+        st.subheader("📊 Risk Dashboard")
 
-        st.write(f"Weather Risk: {result['weather_risk']} 🌧️")
-        st.write(f"Advisory Risk: {result['advisory_risk']} ⚠️")
-        st.write(f"Budget Risk: {result['budget_risk']} 💸")
+        col1, col2, col3 = st.columns(3)
+
+        col1.metric("🌧️ Weather", result["weather_risk"])
+        col2.metric("⚠️ Advisory", result["advisory_risk"])
+        col3.metric("💸 Budget", result["budget_risk"])
 
         st.markdown("---")
 
-        # 🎯 Score
-        st.markdown(f"### 🎯 Final Score: {result['final_score']} / 100")
+        # ---------- SCORE + CRITICAL ----------
+        col1, col2 = st.columns(2)
 
-        # 🔥 Critical factor
-        st.markdown(f"### 🔥 Most Critical Factor: {result['critical']}")
+        col1.metric("🎯 Final Score", f"{result['final_score']} / 100")
+        col2.metric("🔥 Critical Factor", result["critical"])
 
-        # 🚨 Risk Level (FIXED LOGIC)
+        # ---------- RISK MESSAGE ----------
         if result["risk_level"] == "High":
-            st.error("🚨 High Risk - Travel Not Recommended")
+            st.error("🚨 High Risk Trip - Not Recommended")
         elif result["risk_level"] == "Caution":
-            st.warning("⚠️ Moderate Risk - Travel Carefully")
+            st.warning("⚠️ Moderate Risk - Plan Carefully")
         else:
-            st.success("✅ Safe to Travel")
+            st.success("✅ Safe Trip - Enjoy your journey")
 
         st.markdown("---")
 
-        # 🧠 AI Explanation
-        st.markdown("### 🧠 AI Explanation")
+        # ---------- AI EXPLANATION ----------
+        st.subheader("🧠 AI Explanation")
         st.markdown(result["explanation"])
 
-        # 📊 TABLE
-        st.markdown("### 📊 Risk Summary Table")
+        st.markdown("---")
+
+        # ---------- TABLE ----------
+        st.subheader("📋 Risk Summary Table")
 
         st.table({
             "Factor": ["Weather 🌧️", "Advisory ⚠️", "Budget 💸"],
-            "Score (out of 100)": [
+            "Score": [
                 result["weather_risk"],
                 result["advisory_risk"],
                 result["budget_risk"]
-            ]
+            ],
+            "Max": ["100", "100", "100"]
         })
 
         st.markdown("---")
 
+        # ---------- CHART ----------
+        st.subheader("📊 Risk Visualization")
 
-# ---------- HISTORY (FIXED POSITION) ----------
+        data = {
+            "Weather": result["weather_risk"],
+            "Advisory": result["advisory_risk"],
+            "Budget": result["budget_risk"]
+        }
+
+        df = pd.DataFrame(list(data.items()), columns=["Factor", "Score"])
+
+        fig, ax = plt.subplots()
+        ax.bar(df["Factor"], df["Score"])
+        ax.set_ylabel("Risk Score")
+        ax.set_title("Risk Distribution")
+
+        st.pyplot(fig)
+
+        st.markdown("---")
+
+
+# ---------- HISTORY ----------
 st.subheader("📜 Previous Trip Evaluations")
 
 history = get_trip_history()
