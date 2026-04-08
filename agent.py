@@ -4,24 +4,46 @@ from database import save_trip_evaluation
 from gemini_helper import generate_explanation
 
 
+# Convert system weather → human readable
+def interpret_weather(weather):
+    if weather == "heavy_rain":
+        return "rainy 🌧️"
+    elif weather == "moderate":
+        return "cloudy ⛅"
+    elif weather == "clear":
+        return "clear and sunny ☀️"
+    else:
+        return "normal weather"
+
+
 def evaluate_trip(destination, travel_date, budget, estimated_cost):
 
-    # Step 1: Get data from tools
     weather = get_weather(destination)
     advisory = get_advisory(destination)
 
-    # Step 2: Calculate risk
     risk_result = calculate_risk(weather, advisory, budget, estimated_cost)
 
-    # Step 3: Generate AI explanation
+    # 👇 Human readable weather
+    weather_text = interpret_weather(weather)
+
+    # 👇 Find most critical factor
+    risks = {
+        "Weather": risk_result["weather_risk"],
+        "Advisory": risk_result["advisory_risk"],
+        "Budget": risk_result["budget_risk"]
+    }
+    critical = max(risks, key=risks.get)
+
+    # 👇 AI Explanation
     explanation = generate_explanation(
         destination,
-        weather,
+        weather_text,
         advisory,
-        risk_result["risk_level"]
+        risk_result["risk_level"],
+        critical,
+        risk_result["final_score"]
     )
 
-    # Step 4: Prepare data for DB
     data = {
         "destination": destination,
         "travel_date": travel_date,
@@ -34,22 +56,9 @@ def evaluate_trip(destination, travel_date, budget, estimated_cost):
         "explanation": explanation
     }
 
-    # Step 5: Save to database
     save_trip_evaluation(data)
 
-    # Step 6: Add explanation to output
     risk_result["explanation"] = explanation
+    risk_result["critical"] = critical
 
     return risk_result
-
-
-# Optional: only for testing
-if __name__ == "__main__":
-    result = evaluate_trip(
-        destination="Mumbai",
-        travel_date="2026-03-25",
-        budget=30000,
-        estimated_cost=35000
-    )
-
-    print(result)

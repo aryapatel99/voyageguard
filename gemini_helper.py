@@ -4,33 +4,48 @@ from config import GEMINI_API_KEY
 genai.configure(api_key=GEMINI_API_KEY)
 
 
-def generate_explanation(destination, weather, advisory, risk_level):
+def generate_explanation(destination, weather, advisory, risk_level, critical, score):
 
-    # Use stable working model
     model = genai.GenerativeModel("gemini-pro")
 
-    prompt = prompt = f"""
-You are a travel safety assistant.
+    prompt = f"""
+You are a travel safety expert.
 
-Provide a clear, structured and user-friendly explanation.
+STRICT RULES:
+- 3 bullet points ONLY
+- Each point must have emoji
+- 40–50 words total
+- Mention score out of 100
+- Mention most critical factor
+- If risk is LOW → do NOT warn
 
-Include:
-1. Short summary
-2. Reasons (bullet points)
-3. Recommendation
+FORMAT:
 
-Use simple language and include emojis.
+• 🌦️ Weather: {weather}  
+• ⚠️ Advisory: {advisory}  
+• 💸 Budget impact  
 
-Details:
+🔥 Most Critical Factor: {critical}
+
+👉 Recommendation: Clear advice
+
+DATA:
 Destination: {destination}
-Weather: {weather}
-Advisory: {advisory}
+Score: {score}/100
 Risk Level: {risk_level}
 """
 
     try:
         response = model.generate_content(prompt)
         return response.text
-    except Exception as e:
-        # fallback if API fails
-        return f"Trip risk is {risk_level} due to {weather} weather and {advisory} advisory."
+
+    except:
+        return f"""
+• 🌦️ Weather is {weather}, affecting travel conditions  
+• ⚠️ Advisory level is {advisory}, indicating situation  
+• 💸 Budget influences overall trip comfort  
+
+🔥 Most Critical Factor: {critical}
+
+👉 Recommendation: {'Safe to travel' if risk_level == 'Low' else 'Travel with caution'}
+"""

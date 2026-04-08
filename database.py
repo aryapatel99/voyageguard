@@ -38,3 +38,18 @@ def save_trip_evaluation(data):
 
     cursor.close()
     connection.close()
+
+
+def get_trip_history():
+    connection = get_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    query = "SELECT destination, risk_level, final_score, travel_date FROM trip_evaluations ORDER BY id DESC LIMIT 10"
+
+    cursor.execute(query)
+    results = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return results
