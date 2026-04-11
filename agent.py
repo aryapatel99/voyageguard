@@ -56,7 +56,11 @@ def evaluate_trip(destination, travel_date, budget, estimated_cost):
         "explanation": explanation
     }
 
-    save_trip_evaluation(data)
+    # 🔥 SAFE DATABASE SAVE (VERY IMPORTANT FOR DEPLOYMENT)
+    try:
+        save_trip_evaluation(data)
+    except Exception as e:
+        print("Database not available:", e)
 
     risk_result["explanation"] = explanation
     risk_result["critical"] = critical

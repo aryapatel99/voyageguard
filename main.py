@@ -155,9 +155,14 @@ if st.button("Evaluate Trip"):
 
 
 # ---------- HISTORY ----------
+# ---------- HISTORY ----------
 st.subheader("📜 Previous Trip Evaluations")
 
-history = get_trip_history()
+try:
+    history = get_trip_history()
+except Exception as e:
+    print("Database not available:", e)
+    history = []
 
 if history:
     for trip in history:
