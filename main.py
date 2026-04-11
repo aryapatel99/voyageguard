@@ -6,6 +6,17 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
+st.markdown("""
+<style>
+.block-container {
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 15px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 # ---------- BACKGROUND IMAGE ----------
 def set_bg(image_file):
     with open(image_file, "rb") as f:
@@ -26,8 +37,13 @@ def set_bg(image_file):
 set_bg("vg.jpg")
 
 
+
+
 # ---------- TITLE ----------
-st.title("🌍 VoyageGuard Dashboard")
+st.markdown("""
+<h1 style='text-align: center; color: white; '>🌍 VOYAGEGUARD</h1>
+<h4 style='text-align: center; color: lightgray;'>Smart Travel Risk Analyzer</h4>
+""", unsafe_allow_html=True)
 
 st.write("Analyze travel risk using AI-powered insights")
 
@@ -60,7 +76,7 @@ if st.button("Evaluate Trip"):
 
         col1, col2, col3 = st.columns(3)
 
-        col1.metric("🌧️ Weather", result["weather_risk"])
+        col1.metric("🌧️ Weather", result["weather_risk"],"risk level")
         col2.metric("⚠️ Advisory", result["advisory_risk"])
         col3.metric("💸 Budget", result["budget_risk"])
 
@@ -84,7 +100,7 @@ if st.button("Evaluate Trip"):
 
         # ---------- AI EXPLANATION ----------
         st.subheader("🧠 AI Explanation")
-        st.markdown(result["explanation"])
+        st.info(result["explanation"])
 
         st.markdown("---")
 
@@ -115,12 +131,26 @@ if st.button("Evaluate Trip"):
         df = pd.DataFrame(list(data.items()), columns=["Factor", "Score"])
 
         fig, ax = plt.subplots()
-        ax.bar(df["Factor"], df["Score"])
-        ax.set_ylabel("Risk Score")
-        ax.set_title("Risk Distribution")
+
+        # 🔥 FIX: White background for visibility
+        fig.patch.set_facecolor("white")
+        ax.set_facecolor("white")
+
+        # Bar colors (nice UI)
+        ax.bar(
+            df["Factor"],
+            df["Score"],
+            color=["#4CAF50", "#FFC107", "#F44336"]
+        )
+
+        # Text styling (VERY IMPORTANT)
+        ax.set_title("Risk Distribution", color="black")
+        ax.set_ylabel("Risk Score", color="black")
+
+        ax.tick_params(axis='x', colors='black')
+        ax.tick_params(axis='y', colors='black')
 
         st.pyplot(fig)
-
         st.markdown("---")
 
 
@@ -131,8 +161,18 @@ history = get_trip_history()
 
 if history:
     for trip in history:
-        st.write(
-            f"🌍 {trip['destination']} | 🎯 {trip['final_score']}/100 | 🚨 {trip['risk_level']}"
-        )
+        st.markdown(f"""
+🔹 **{trip['destination']}**  
+Score: {trip['final_score']}/100  
+Risk: {trip['risk_level']}
+""")
 else:
     st.write("No previous trips found.")
+    
+st.markdown("---")
+st.markdown("""
+<hr>
+<center style='color: lightgray; font-size: 14px;'>
+🚀 Developed by APS INNOVATORS | VoyageGuard © 2026
+</center>
+""", unsafe_allow_html=True)
